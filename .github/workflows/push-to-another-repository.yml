@@ -22,7 +22,7 @@ jobs:
         with:
           source-directory: "output"
           destination-github-username: dlgkdud4759
-          destination-repository-name: final-02-TrinityForce-relese
+          destination-repository-name: final-02-TrinityForce-release
           user-email: ${{ secrets.EMAIL_LHY }}
           commit-message: ${{ github.event.commits[0].message }}
           target-branch: main
