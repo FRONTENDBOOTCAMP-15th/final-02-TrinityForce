@@ -4,6 +4,6 @@ cd ../
 # output 폴더 생성
 mkdir output
 # 레포지토리 하위의 모든 폴더와 파일을 output 하위로 복사(.gitignore, .github 같은 숨김 파일/폴더는 제외)
-cp -r ./flnal-02-trinityforce/* ./output
+cp -r ./final-02-TrinityForce/* ./output
 # output 폴더를 레포지토리 하위로 이동
-mv ./output ./flnal-02-trinityforce/
+mv ./output ./final-02-TrinityForce/
