@@ -24,10 +24,10 @@ export default function PasswordInput({ value, onChange }: Props) {
         className="
           w-[353px] h-[56px]
           px-4 pr-12
-          rounded-xl border border-[var(--color-brown-accent)]
-          text-base text-[var(--color-font-dark)] placeholder:text-[var(--color-gray-dark)]
+          rounded-xl border border-brown-accent
+          text-base text-font-dark placeholder:text-gray-dark
           bg-white
-          outline-none focus:border-[var(--color-brown-guide)] focus:ring-1 focus:ring-[var(--color-brown-guide)]
+          outline-none focus:border-brown-guide focus:ring-1 focus:ring-brown-guide
           transition
         "
       />
