@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { BackIcon } from "@/app/components/icons/Back";
 
 type ModalProps = {
   isOpen: boolean;          
@@ -30,12 +31,12 @@ export default function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-6 sm:px-6">
       {/* 배경 어둡게 - 클릭하면 닫힘 */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* 모달 박스 */}
       <div
         className={[
-          "relative z-10 w-full max-w-[450px] max-h-[80vh] overflow-y-auto rounded-2xl bg-[#F4EBDC] p-6",
+          "relative z-10 w-full max-w-[500px] max-h-[80vh] overflow-y-auto rounded-2xl bg-[#F4EBDC] p-6",
           className,
         ].join(" ")}
         // 박스 클릭하면 안 닫히게
@@ -48,11 +49,7 @@ export default function Modal({
           className="absolute left-4 top-4"
           aria-label="뒤로가기"
         >
-          <img
-            src="/icons/left_line.svg"
-            alt="뒤로가기"
-            className="w-6 h-6"
-          />
+          <BackIcon className="w-6 h-6"></BackIcon>
         </button>
         {/* 실제 내용 */}
         {children}
