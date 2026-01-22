@@ -36,7 +36,7 @@ export default function Modal({
       {/* 모달 박스 */}
       <div
         className={[
-          "relative z-10 w-full max-w-[500px] max-h-[80vh] overflow-y-auto rounded-2xl bg-[#F4EBDC] p-6",
+          "relative z-10 w-full max-w-[500px] max-h-[80vh] overflow-y-auto rounded-2xl bg-bg-primary p-6",
           className,
         ].join(" ")}
         // 박스 클릭하면 안 닫히게
