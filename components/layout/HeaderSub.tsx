@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { MapPin, Bell, ChevronLeft} from 'lucide-react';
 
-export default function HeaderMain() {
+export default function HeaderSub() {
   return (
     <header className="flex items-center justify-between h-15 px-4 bg-bg-primary">
       {/* 왼쪽 뒤로가기 */}
