@@ -1,5 +1,5 @@
 import './globals.css';
-import HeaderMain from '@/components/layout/Header';
+import HeaderMain from '@/components/layout/HeaderMain';
 import Navigation from '@/components/layout/Navigation';
 
 export default function RootLayout({
