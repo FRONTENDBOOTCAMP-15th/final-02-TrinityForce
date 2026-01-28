@@ -27,7 +27,7 @@ export default function SearchInput({
   }
 
   return (
-    <div className="relative w-full max-w-[680px] h-[40px] flex items-center bg-white rounded-[30px] border border-brown-accent">
+    <div className="relative w-full max-w-170 h-10 flex items-center bg-white rounded-[30px] border border-brown-accent">
       {/* 카테고리 드롭다운 */}
       <select
         value={selectedCategory}
