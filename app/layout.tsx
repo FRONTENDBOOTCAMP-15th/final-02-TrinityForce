@@ -3,7 +3,7 @@
 import './globals.css';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
 import { useEffect } from 'react';
-import { useUserStore } from '@/app/zustand/useUserStore';
+import { useUserStore } from '@/zustand/useUserStore';
 
 export default function RootLayout({
   children,

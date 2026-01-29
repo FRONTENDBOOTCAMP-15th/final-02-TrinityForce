@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUserStore } from '@/app/zustand/useUserStore';
+import { useUserStore } from '@/zustand/useUserStore';
 
 export function useRequireAuth() {
   const isLoggedIn = useUserStore((state) => state.isLoggedIn);

@@ -10,7 +10,7 @@ import { KakaoIcon } from '@/app/components/icons/Kakao';
 import { GoogleIcon } from '@/app/components/icons/Google';
 import { getAxios, handleAxiosError } from '@/utils/axios';
 import type { UserDetail } from '@/types/user';
-import { useUserStore } from '@/app/zustand/useUserStore';
+import { useUserStore } from '@/zustand/useUserStore';
 
 type LoginModalProps = {
   isOpen: boolean;
