@@ -1,17 +1,26 @@
+'use client'
 import Link from 'next/link';
 import { MapPin, Bell, ChevronLeft} from 'lucide-react';
 
 interface HeaderSubProps {
   title?: string;
+  backUrl?: string;
 }
 
-export default function HeaderSub({ title = '헤더' }: HeaderSubProps) {
+export default function HeaderSub({ title = '헤더', backUrl }: HeaderSubProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-15 px-4 bg-bg-primary">
-      {/* 왼쪽 뒤로가기 */}
-      <Link href="/" >
-        <ChevronLeft size={32}/>
-      </Link>
+      {backUrl ? (
+        // backUrl이 있으면 그 URL로
+        <Link href={backUrl}>
+          <ChevronLeft size={32}/>
+        </Link>
+      ) : (
+        // 없으면 기본 동작 (뒤로가기)
+        <button onClick={() => window.history.back()}>
+          <ChevronLeft size={32}/>
+        </button>
+      )}
 
       {/* 중앙 텍스트 */}
       <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold">
