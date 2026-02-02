@@ -73,6 +73,7 @@ export default function ReviewWritePage() {
         order_id: Number(orderId),
         product_id: Number(productId),
         rating: rating,
+        content: selectedOption,
         extra: {
           title: selectedOption,
         },
