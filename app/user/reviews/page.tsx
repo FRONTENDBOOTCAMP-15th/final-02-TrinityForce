@@ -49,7 +49,7 @@ export default function ReviewsPage() {
     try {
       setIsLoading(true)
 
- const axios = getAxios()
+      const axios = getAxios()
       let response
       
       if (activeTab === "written") {
@@ -139,7 +139,7 @@ export default function ReviewsPage() {
         </div>
 
         {/* 빈 상태 */}
-          {isEmpty ? (
+        {isEmpty ? (
           <EmptyState
             title={
               activeTab === "received" 
@@ -209,6 +209,7 @@ export default function ReviewsPage() {
                     <p className="text-xs text-gray-dark mb-2">
                       {item.createdAt}
                     </p>
+                    
                     {/* 별 컴포넌트 사용 */}
                     <div className="flex items-center gap-1 mb-2">
                       {[1, 2, 3, 4, 5].map((star) => (
