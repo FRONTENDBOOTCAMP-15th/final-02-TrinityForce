@@ -8,18 +8,20 @@ import Link from 'next/link';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 
-interface Post {
+interface Product {
   _id: number;
-  title: string;
+  seller_id: number;
+  name: string;
   content: string;
-  image?: string;
+  mainImages?: { path: string; name: string }[];
   createdAt: string;
-  user: {
+  seller?: {
     _id: number;
     name: string;
     image?: string;
   };
   extra?: {
+    isBook?: boolean;
     author?: string;
     condition?: string;
     category?: string;
@@ -28,19 +30,21 @@ interface Post {
 }
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchProducts = async () => {
       try {
-        const res = await fetch(`${API_URL}/posts?type=book`, {
+        const res = await fetch(`${API_URL}/products`, {
           headers: {
             'client-id': CLIENT_ID || '',
           },
         });
         const data = await res.json();
-        setPosts(data.item || []);
+        // isBook이 true인 상품만 필터링
+        const books = (data.item || []).filter((item: Product) => item.extra?.isBook);
+        setProducts(books);
       } catch (error) {
         console.error('도서 목록 조회 실패:', error);
       } finally {
@@ -48,7 +52,7 @@ export default function Home() {
       }
     };
 
-    fetchPosts();
+    fetchProducts();
   }, []);
 
   // 날짜 포맷팅
@@ -61,7 +65,7 @@ export default function Home() {
   const getImageUrl = (imagePath?: string) => {
     if (!imagePath) return '/images/book1.jpg'; // 기본 이미지
     if (imagePath.startsWith('http')) return imagePath;
-    return `${API_URL}/${imagePath}`;
+    return `${API_URL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
   };
 
   if (loading) {
@@ -75,9 +79,9 @@ export default function Home() {
   return (
     <div className="min-h-screen">
 
-      {/* 게시글 목록 */}
+      {/* 도서 목록 */}
       <main className="max-w-6xl mx-auto px-4 py-6 md:px-6 md:py-8 pb-24">
-        {posts.length === 0 ? (
+        {products.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <p className="text-font-dark text-lg">등록된 도서가 없습니다.</p>
             <Link
@@ -89,18 +93,18 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {posts.map((post) => (
+            {products.map((product) => (
               <Link
-                key={post._id}
-                href={`/book-detail/${post._id}`}
+                key={product._id}
+                href={`/book-detail/${product._id}`}
                 className="bg-white rounded-lg overflow-hidden block cursor-pointer hover:shadow-md transition-shadow"
               >
 
                 {/* 이미지 */}
                 <div className="relative aspect-3/4 bg-gray-100">
                   <Image
-                    src={getImageUrl(post.image)}
-                    alt={post.title}
+                    src={getImageUrl(product.mainImages?.[0]?.path)}
+                    alt={product.name}
                     fill
                     className="object-cover"
                   />
@@ -117,13 +121,13 @@ export default function Home() {
                 {/* 정보 */}
                 <div className="p-3 md:p-4">
                   <p className="text-m md:text-sm font-semibold text-font-dark mb-1">
-                    {post.title}
+                    {product.name}
                   </p>
                   <p className="text-sm md:text-base font-medium text-gray-dark line-clamp-2 mb-2">
-                    {post.extra?.author || '저자 미상'}
+                    {product.extra?.author || '저자 미상'}
                   </p>
                   <p className="text-xs md:text-sm font-regular text-gray-dark">
-                    {formatDate(post.createdAt)}
+                    {formatDate(product.createdAt)}
                   </p>
                 </div>
               </Link>
