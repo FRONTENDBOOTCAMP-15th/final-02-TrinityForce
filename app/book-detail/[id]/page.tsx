@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Heart, Star, X } from 'lucide-react';
 
 import HeaderSub from '@/components/layout/HeaderSub';
+import LoginModal from '@/components/modals/LoginModal';
 import { useUserStore } from '@/zustand/useUserStore';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -307,6 +308,12 @@ export default function BookDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* ===== 모달: 로그인 ===== */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
 
       {/* ===== 모달: 도서 상태 기준 가이드 ===== */}
       {isGuideOpen && (
