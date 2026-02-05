@@ -1,14 +1,41 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, X } from 'lucide-react';
+import { useUserStore } from '@/zustand/useUserStore';
+import useAuthStatus from '@/utils/useAuthStatus';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 
+// 클라이언트에서만 true를 반환하는 훅
+function useHasMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+}
+
+function getStoredUser() {
+  if (typeof window === 'undefined') return null;
+  const localUser = localStorage.getItem('user');
+  const sessionUser = sessionStorage.getItem('user');
+  const userData = localUser || sessionUser;
+  return userData ? JSON.parse(userData) : null;
+}
+
 export default function Page() {
   const router = useRouter();
+  const hasMounted = useHasMounted();
+  const { user, initUser } = useUserStore();
+  const isLoggedIn = useAuthStatus();
+
+  // 컴포넌트 마운트 시 저장된 로그인 정보 확인
+  useEffect(() => {
+    initUser();
+  }, [initUser]);
 
   // ---- 공통 스타일 ----
   const titleCls = 'text-7 font-medium text-font-dark';
@@ -118,6 +145,15 @@ export default function Page() {
 
   // 도서 등록 함수
   const handleSubmit = async () => {
+    const storedUser = getStoredUser();
+    const accessToken = storedUser?.token?.accessToken || user?.token?.accessToken;
+
+    // 로그인 확인
+    if (!storedUser || !accessToken) {
+      alert('도서를 등록하려면 로그인이 필요합니다.');
+      return;
+    }
+
     // 제출 시도 표시 (모든 필드 터치)
     touchAll();
 
@@ -158,7 +194,11 @@ export default function Page() {
         name: bookName,
         content: description,
         mainImages: uploadedImages,
+        price: 0,
+        shippingFees: 0,
+        quantity: 1,
         extra: {
+          isBook: true,
           author,
           condition,
           category,
@@ -170,6 +210,7 @@ export default function Page() {
         headers: {
           'Content-Type': 'application/json',
           'client-id': CLIENT_ID || '',
+          'Authorization': `Bearer ${accessToken}`,
         },
         body: JSON.stringify(productData),
       });
@@ -192,6 +233,15 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-bg-primary pb-24">
+      {/* 로그인 상태 안내 - 마운트 후에만 표시 */}
+      {hasMounted && !isLoggedIn && (
+        <div className="px-4 py-3 bg-yellow-50 border-b border-yellow-200">
+          <p className="text-sm text-yellow-800 text-center">
+            도서를 등록하려면 먼저 로그인해주세요. 상단의 사람 아이콘을 클릭하여 로그인할 수 있습니다.
+          </p>
+        </div>
+      )}
+
       {/* 상단: 도서정보 */}
       <div className="px-4 py-4 max-w-6xl mx-auto">
         <div className="flex items-center justify-between">
