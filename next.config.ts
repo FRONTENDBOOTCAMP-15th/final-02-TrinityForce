@@ -8,6 +8,16 @@ const nextConfig: NextConfig = {
         hostname: 'fesp-api.koyeb.app',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'covers.openlibrary.org',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
     ],
   },
 };
