@@ -119,6 +119,7 @@ export default function Meetup() {
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="모임을 검색하세요."
           onSearch={handleSearch}
+          showCategory={false}
         />
       </div>
 
