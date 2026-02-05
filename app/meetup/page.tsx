@@ -65,8 +65,7 @@ export default function Meetup() {
   }, []);
 
   // 검색 결과 필터링
-  const sourcePosts =
-    !hasSearched && posts.length === 0 ? [fallbackPost] : posts;
+  const sourcePosts = posts.length === 0 ? [fallbackPost] : posts;
 
   const filteredPosts = hasSearched
     ? sourcePosts.filter(
@@ -116,6 +115,8 @@ export default function Meetup() {
       {/* 검색창 */}
       <div className="px-4 pb-4 md:px-6 md:pb-6 max-w-6xl mx-auto">
         <SearchInput
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="모임을 검색하세요."
           onSearch={handleSearch}
         />
