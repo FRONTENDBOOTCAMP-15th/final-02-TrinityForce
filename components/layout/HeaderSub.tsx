@@ -1,18 +1,31 @@
+'use client';
+
 import Link from 'next/link';
-import { MapPin, Bell, ChevronLeft} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { MapPin, Bell, ChevronLeft } from 'lucide-react';
 
 interface HeaderSubProps {
   title?: string;
   backHref?: string;
+  backUrl?: string;
 }
 
-export default function HeaderSub({ title = '헤더', backHref = '/' }: HeaderSubProps) {
+export default function HeaderSub({ title = '헤더', backHref, backUrl }: HeaderSubProps) {
+  const router = useRouter();
+  const resolvedBackHref = backHref ?? backUrl;
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-15 px-4 bg-bg-primary">
       {/* 왼쪽 뒤로가기 */}
-      <Link href={backHref} >
-        <ChevronLeft size={32}/>
-      </Link>
+      {resolvedBackHref ? (
+        <Link href={resolvedBackHref}>
+          <ChevronLeft size={32} />
+        </Link>
+      ) : (
+        <button type="button" onClick={() => router.back()} aria-label="뒤로가기">
+          <ChevronLeft size={32} />
+        </button>
+      )}
 
       {/* 중앙 텍스트 */}
       <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-semibold">
