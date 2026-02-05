@@ -43,12 +43,12 @@ export default function HeaderSub({ title = '헤더', backUrl }: HeaderSubProps)
         <div className="flex items-center gap-3">
 
           {/* 위치 재설정 버튼 */}
-          <Link href="/location" aria-label="위치 설정">
+          <Link href="/location" aria-label="위치 설정" className="cursor-pointer">
             <MapPin size={24} className="text-font-dark" />
           </Link>
 
           {/* 알림 버튼 */}
-          <button type="button" onClick={goToAlert} aria-label="알림" className="relative">
+          <button type="button" onClick={goToAlert} aria-label="알림" className="relative cursor-pointer">
             <Bell size={24} className="text-font-dark" />
           </button>
         </div>

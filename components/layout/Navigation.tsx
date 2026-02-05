@@ -16,7 +16,7 @@ export default function NavigationBar() {
     const isActive = path === '/'
       ? pathname === '/' || pathname.startsWith('/book-detail') || pathname.startsWith('/search')
       : pathname.startsWith(path);
-    return `flex items-center justify-center p-2 md:p-3 transition-colors ${
+    return `flex items-center justify-center p-2 md:p-3 transition-colors cursor-pointer ${
       isActive ? 'text-brown-accent' : 'text-gray-medium hover:text-brown-accent'
     }`;
   };
