@@ -262,13 +262,13 @@ export default function MyPage() {
           </div>
 
           {/* 차단 목록 */}
-          <Link 
-            href="/user/blocked" 
-            className="flex items-center px-4 py-3 hover:bg-gray-light transition"
+          <button
+            onClick={() => alert('준비 중인 기능입니다.')}
+            className="w-full flex items-center px-4 py-3 hover:bg-gray-light transition text-left opacity-50 cursor-not-allowed"
           >
             <BlockIcon className="w-5 h-5 mr-3" />
-            <span className="text-font-dark">차단 목록</span>
-          </Link>
+            <span className="text-font-dark">차단 목록 (준비 중)</span>
+          </button>
         </div>
 
         {/* 로그아웃/탈퇴 목록 */}
