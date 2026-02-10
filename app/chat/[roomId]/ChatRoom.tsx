@@ -10,6 +10,16 @@ import Chatting from '@/components/ui/Chatting';
 import { useUserStore } from '@/zustand/useUserStore';
 import useChat from '../_hooks/useChat';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
+
+interface ProductData {
+  _id: number;
+  name: string;
+  content: string;
+  mainImages?: { path: string; name: string }[];
+}
+
 export default function ChatRoom({ roomId }: { roomId: string }) {
   console.log(roomId);
   // useChat 훅에서 채팅 관련 상태와 액션들을 가져옴
@@ -28,6 +38,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
     (r) => activeRoomId !== undefined && String(r._id) === String(activeRoomId)
   );
 
+  const [product, setProduct] = useState<ProductData | null>(null);
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,11 +51,9 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
     }
   };
 
-  const { user: currentUser } = useUserStore();
-
   // 초기 데이터 로드 및 가상 파트너 정보 가져오기
   useEffect(() => {
-    if (!currentUser?._id) return;
+    if (!user?._id) return;
 
     const init = async () => {
       // 전달받은 정보를 기반으로 해당 채팅방 입장
@@ -54,13 +63,48 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
     };
 
     init();
-  }, [currentUser, enterRoom]);
+  }, [user, enterRoom, roomId]);
 
   useEffect(() => {
     return () => {
       setActiveRoomId(undefined);
     };
-  }, []);
+  }, [setActiveRoomId]);
+
+  // 게시글 정보 로드
+  useEffect(() => {
+    const fetchProductInfo = async () => {
+      if (!activeRoom) return;
+
+      // resourceType이 'product'이고 resourceId가 있을 때만
+      if (activeRoom.resourceType === 'product' && activeRoom.resourceId) {
+        try {
+          const res = await fetch(
+            `${API_URL}/products/${activeRoom.resourceId}`,
+            {
+              headers: { 'client-id': CLIENT_ID || '' },
+            }
+          );
+          const data = await res.json();
+
+          if (res.ok) {
+            setProduct(data.item);
+          }
+        } catch (error) {
+          console.error('게시글 정보 조회 실패:', error);
+        }
+      }
+    };
+
+    fetchProductInfo();
+  }, [activeRoom]);
+
+  // 이미지 URL 처리
+  const getImageUrl = (imagePath?: string) => {
+    if (!imagePath) return '/images/book1.jpg';
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${API_URL}/${imagePath}`;
+  };
 
   if (!user) return null;
 
@@ -77,31 +121,51 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
       <HeaderSub title={partner?.name} />
 
       {/* 게시글 정보 / 후기 작성 */}
-      <div className="fixed right-0 left-0 bg-bg-primary border-b border-border-primary py-4 px-2">
-        <div className="flex flex-col gap-1 p-2">
-          <article className="flex items-center">
-            <Image
-              className="w-10 h-10 m-2 bg-border-primary rounded-md"
-              alt="사용자 프로필"
-              src={partner?.image || '/images/Logo.png'}
-              width={36}
-              height={36}
-            />
-            <div className="flex-1 flex-col gap-0.5 h-9.5 ml-2 min-w-0">
-              <h3 className="h-5 text-mg font-semibold text-font-dark">
-                {partner?.name}
-              </h3>
-              <p className="h-4 ml-0.5 text-xs font-medium text-gray-dark truncate">
-                {activeRoom?.roomName}
-              </p>
-            </div>
-          </article>
+      <div className="fixed right-0 left-0 bg-bg-primary border-b border-border-primary py-3 px-2 md:py-4 md:px-4 lg:px-6">
+        <div className="flex flex-col gap-1 p-2 md:p-3">
+          {product ? (
+            <article className="flex items-center gap-2 md:gap-3">
+              <Image
+                className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 bg-border-primary rounded-md object-cover"
+                alt="게시글 이미지"
+                src={getImageUrl(product.mainImages?.[0]?.path)}
+                width={56}
+                height={56}
+              />
+              <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+                <h3 className="text-sm md:text-base lg:text-lg font-semibold text-font-dark truncate">
+                  {product.name}
+                </h3>
+                <p className="text-xs md:text-sm font-medium text-gray-dark truncate">
+                  {product.content}
+                </p>
+              </div>
+            </article>
+          ) : (
+            <article className="flex items-center gap-2 md:gap-3">
+              <Image
+                className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 bg-border-primary rounded-md object-cover"
+                alt="사용자 프로필"
+                src={partner?.image || '/images/Logo.png'}
+                width={56}
+                height={56}
+              />
+              <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+                <h3 className="text-sm md:text-base lg:text-lg font-semibold text-font-dark truncate">
+                  {partner?.name}
+                </h3>
+                <p className="text-xs md:text-sm font-medium text-gray-dark truncate">
+                  {activeRoom?.roomName}
+                </p>
+              </div>
+            </article>
+          )}
           <ChatTransactionButton />
         </div>
       </div>
 
       {/* 채팅 내용 */}
-      <div className="pt-33.75 pb-12">
+      <div className="pt-27.75 md:pt-33.5 lg:pt-35.75 pb-12">
         {messages.map((msg, index) => (
           <Chatting
             key={msg._id || index}
