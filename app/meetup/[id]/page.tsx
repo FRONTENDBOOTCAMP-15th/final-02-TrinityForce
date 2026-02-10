@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import HeaderSub from '@/components/layout/HeaderSub';
 import Button from '@/components/ui/Button';
 import LoginModal from '@/components/modals/LoginModal';
 import useAuthStatus from '@/utils/useAuthStatus';
+import { useLikeStore } from '@/zustand/useLikeStore';
+import { getAxios, handleAxiosError } from '@/utils/axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -37,24 +39,28 @@ const fallbackPost: MeetupPost = {
 };
 
 type Comment = {
-  id: number;
-  profileImage?: string;
-  nickname: string;
+  _id: number;
+  user?: { _id: number; name: string; image?: string };
   content: string;
-  isMyComment?: boolean;
-  userId?: number;
+  createdAt?: string;
 };
 
 const formatDate = (dateString?: string) => {
   if (!dateString) return '';
   const date = new Date(dateString);
-  return isNaN(date.getTime())
-    ? dateString
-    : date.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      });
+  if (isNaN(date.getTime())) return dateString;
+
+  const dateStr = date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const timeStr = date.toLocaleTimeString('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  return `${dateStr} ${timeStr}`;
 };
 
 const getImageUrl = (image?: MeetupPost['image']) => {
@@ -65,50 +71,56 @@ const getImageUrl = (image?: MeetupPost['image']) => {
   return `${API_URL}/${path}`;
 };
 
+const getUserImageUrl = (path?: string) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return `${API_URL}/${path}`;
+};
+
 export default function MeetupPostDetail() {
   const params = useParams<{ id: string }>();
   const postId = params?.id;
+  const router = useRouter();
   const isLoggedIn = useAuthStatus();
+  const { likedPosts, toggleLike } = useLikeStore();
 
   const [post, setPost] = useState<MeetupPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState<Comment[]>([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
-  // TODO: 댓글 API 연동 전까지는 빈 배열로 유지
-  const comments: Comment[] = [];
+  const fetchPost = useCallback(async () => {
+    if (!postId) return;
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${API_URL}/posts/${postId}`, {
+        headers: { 'client-id': CLIENT_ID || '' },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.message || '모임 게시글을 불러오는데 실패했습니다.');
+      }
+
+      if (data.item?.type && data.item.type !== 'meetup') {
+        throw new Error('모임 게시글이 아닙니다.');
+      }
+
+      setPost(data.item);
+      setComments(data.item?.replies || []);
+    } catch (err) {
+      console.error('모임 게시글 조회 실패:', err);
+      setError('모임 게시글을 불러오는데 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [postId]);
 
   useEffect(() => {
-    if (!postId) return;
-
-    const fetchPost = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch(`${API_URL}/posts/${postId}`, {
-          headers: { 'client-id': CLIENT_ID || '' },
-        });
-        const data = await res.json();
-        if (!res.ok || !data.ok) {
-          throw new Error(data.message || '모임 게시글을 불러오는데 실패했습니다.');
-        }
-
-        if (data.item?.type && data.item.type !== 'meetup') {
-          throw new Error('모임 게시글이 아닙니다.');
-        }
-
-        setPost(data.item);
-      } catch (err) {
-        console.error('모임 게시글 조회 실패:', err);
-        setError('모임 게시글을 불러오는데 실패했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchPost();
-  }, [postId]);
+  }, [fetchPost]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -127,17 +139,83 @@ export default function MeetupPostDetail() {
     }
   }, [isLoggedIn]);
 
-  const handleCommentSubmit = () => {
+  const handleCommentSubmit = async () => {
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
       return;
     }
-    // TODO: 댓글 API 연동 시 여기에 추가
-    setCommentText('');
+    if (!commentText.trim()) {
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+    if (!postId) return;
+
+    try {
+      const axios = getAxios();
+      const response = await axios.post(`/posts/${postId}/replies`, {
+        content: commentText.trim(),
+      });
+
+      if (response.data?.ok) {
+        const newReply = response.data.item;
+        if (newReply) {
+          setComments((prev) => [...prev, newReply]);
+        } else {
+          await fetchPost();
+        }
+        setCommentText('');
+        return;
+      }
+      alert('댓글 등록에 실패했습니다.');
+    } catch (error) {
+      console.error('댓글 등록 실패:', error);
+      handleAxiosError(error);
+    }
   };
 
-  const handleDeletePost = () => {
-    // TODO: 삭제 API 연동 시 여기에 추가
+  const handleDeletePost = async () => {
+    if (!post || !post._id) return;
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    if (!confirm('게시글을 삭제할까요?')) return;
+
+    try {
+      const axios = getAxios();
+      const response = await axios.delete(`/posts/${post._id}`);
+      if (response.data?.ok) {
+        alert('게시글이 삭제되었습니다.');
+        router.push('/meetup');
+        return;
+      }
+      alert('게시글 삭제에 실패했습니다.');
+    } catch (error) {
+      console.error('게시글 삭제 실패:', error);
+      handleAxiosError(error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (!postId) return;
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    if (!confirm('댓글을 삭제할까요?')) return;
+
+    try {
+      const axios = getAxios();
+      const response = await axios.delete(`/posts/${postId}/replies/${commentId}`);
+      if (response.data?.ok) {
+        setComments((prev) => prev.filter((c) => c._id !== commentId));
+        return;
+      }
+      alert('댓글 삭제에 실패했습니다.');
+    } catch (error) {
+      console.error('댓글 삭제 실패:', error);
+      handleAxiosError(error);
+    }
   };
 
   if (isLoading) {
@@ -152,20 +230,43 @@ export default function MeetupPostDetail() {
   const shouldShowError = !post && error;
 
   const imageUrl = getImageUrl(displayPost.image);
-  const likeCount = displayPost.likes ?? displayPost.bookmarks ?? 0;
+  const baseLikeCount = displayPost.likes ?? displayPost.bookmarks ?? 0;
+  const isLiked = likedPosts.has(displayPost._id);
+  const likeCount = isLiked ? baseLikeCount + 1 : baseLikeCount;
 
   return (
     <div className="min-h-screen bg-bg-primary pb-24">
       {/* 헤더 */}
-      <HeaderSub title="독서 모임" backHref="/meetup" />
+      <HeaderSub title="독서 모임" backUrl="/meetup" />
 
       {/* 게시글 헤더 */}
       <div className="px-4 py-4 md:px-6 md:py-6 max-w-6xl mx-auto">
         <div className="flex items-start justify-between">
-          <h2 className="text-xl md:text-2xl font-bold text-font-dark">{displayPost.title}</h2>
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl md:text-2xl font-bold text-font-dark">
+              {displayPost.title}
+            </h2>
+            <p className="text-sm md:text-base text-gray-dark">
+              작성자: {displayPost.user?.name || '알 수 없음'}
+            </p>
+          </div>
           <div className="flex flex-col items-end">
             <div className="flex items-center gap-1 md:gap-2">
-              <Heart size={20} className="md:w-6 md:h-6 text-gray-dark" />
+              <button
+                type="button"
+                aria-label="좋아요"
+                onClick={() => toggleLike(displayPost._id)}
+                className="flex items-center gap-1 cursor-pointer group"
+              >
+                <Heart
+                  size={20}
+                  className={`md:w-6 md:h-6 transition-colors ${
+                    isLiked
+                      ? 'text-red-like fill-red-like'
+                      : 'text-gray-dark group-hover:text-red-like group-hover:fill-red-like'
+                  }`}
+                />
+              </button>
               <span className="text-sm md:text-base text-gray-dark">{likeCount}</span>
             </div>
             <p className="text-[12px] md:text-[14px] text-gray-dark mt-1">
@@ -222,21 +323,22 @@ export default function MeetupPostDetail() {
           </div>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id}>
+            <div key={comment._id}>
               <div className="px-4 py-4 md:px-6 md:py-6">
                 <div className="flex gap-3 md:gap-4">
                   {/* 프로필 이미지 */}
                   <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden bg-gray-200 shrink-0">
-                    {comment.profileImage ? (
+                    {comment.user?.image ? (
                       <Image
-                        src={comment.profileImage}
-                        alt={comment.nickname}
+                        src={getUserImageUrl(comment.user.image) || ''}
+                        alt={comment.user?.name || '사용자'}
                         fill
                         className="object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-500 text-lg font-bold">
-                        {comment.nickname.charAt(0)}
+                        {comment.user?.name?.charAt(0) || '?'}
                       </div>
                     )}
                   </div>
@@ -244,14 +346,15 @@ export default function MeetupPostDetail() {
                   {/* 댓글 내용 */}
                   <div className="flex-1">
                     <p className="text-sm md:text-base font-semibold text-font-dark mb-1">
-                      {comment.nickname}
+                      {comment.user?.name || '알 수 없음'}
                     </p>
                     <p className="text-sm md:text-base text-font-dark">{comment.content}</p>
-                    {(comment.isMyComment || (comment.userId && comment.userId === currentUserId)) && (
+                    {comment.user?._id && comment.user._id === currentUserId && (
                       <div className="flex justify-end mt-2">
                         <button
                           type="button"
-                          className="text-[12px] md:text-[14px] text-gray-dark hover:text-brown-accent transition-colors"
+                          onClick={() => handleDeleteComment(comment._id)}
+                          className="text-[12px] md:text-[14px] text-gray-dark hover:text-brown-accent transition-colors cursor-pointer"
                         >
                           삭제
                         </button>
@@ -291,11 +394,11 @@ export default function MeetupPostDetail() {
         </div>
 
         {/* 글 삭제 버튼 (내 글일 때만) */}
-        {displayPost.user?._id && displayPost.user._id === currentUserId && (
-          <div className="flex justify-center mt-4 md:mt-6">
-            <Button text="글 삭제" onClick={handleDeletePost} />
-          </div>
-        )}
+      {post && displayPost.user?._id && displayPost.user._id === currentUserId && (
+        <div className="flex justify-center mt-4 md:mt-6">
+          <Button text="글 삭제" onClick={handleDeletePost} />
+        </div>
+      )}
       </div>
 
       <LoginModal
