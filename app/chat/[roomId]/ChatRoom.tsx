@@ -96,7 +96,10 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
               </p>
             </div>
           </article>
-          <ChatTransactionButton />
+          <ChatTransactionButton
+          orderId={activeRoom?._id || 0}
+          productId={activeRoom?.resourceId || 0}
+          />
         </div>
       </div>
 
