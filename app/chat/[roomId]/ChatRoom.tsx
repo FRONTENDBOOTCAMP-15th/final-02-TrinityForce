@@ -70,7 +70,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
   );
 
   // 본인이 방의 개설자(ownerId)이면 '문의', 아니면 '답변'으로 표시
-  const chatType = activeRoom?.ownerId === user._id ? '문의' : '답변';
+  // const chatType = activeRoom?.ownerId === user._id ? '문의' : '답변';
 
   return (
     <>
