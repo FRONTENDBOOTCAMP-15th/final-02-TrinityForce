@@ -24,3 +24,23 @@
 | 김하연 | 조시연 | 이하영 |
 | PM, 발표 | 서기 | PL |
 | 도서 등록, 도서 목록 및 상세, 모임 목록 및 상세, 위치 권한 및 설정 | 로그인 및 회원가입, 검색바, 내정보, 후기 | 채팅, 알림 |
+
+<br>
+<br>
+<br>
+
+## ⚙️ 기술 스택 및 개발 환경
+
+<hr>
+
+| 분류             | 툴                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **기술 스택**    | <img src="https://img.shields.io/badge/Tailwind-6d28d9?style=flat-square&logo=Tailwind&logoColor=white"/> <img src="https://img.shields.io/badge/Typescript-3178C6?style=flat-square&logo=Typescript&logoColor=white"/>                                                                                                                                                                                             |
+| **UI/UX**        | <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=white"/>                                                                                                                                                                                                                                                                                                                 |
+| **개발 환경**    | <img src="https://img.shields.io/badge/VisualStudioCode-007ACC?style=flat-square&logo=VisualStudioCode&logoColor=white"/> <img src="https://img.shields.io/badge/vite-646CFF?style=flat-square&logo=vite&logoColor=white"/>                                                                                                                                                                                         |
+| **커뮤니케이션** | <img src="https://img.shields.io/badge/Github-181717?style=flat-square&logo=Github&logoColor=white"/> <img src="https://img.shields.io/badge/GIT-F05032?style=flat-square&logo=GIT&logoColor=white"/> <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white"/> <img src="https://img.shields.io/badge/notion-000000?style=flat-square&logo=notion&logoColor=white"/> |
+| **배포**         | <img src="https://img.shields.io/badge/Netlify-01847B?style=flat-square&logo=Netlify&logoColor=white"/>                                                                                                                                                                                                                                                                                                             |
+
+<br>
+<br>
+<br>
