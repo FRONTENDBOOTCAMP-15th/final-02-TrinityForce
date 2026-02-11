@@ -3,12 +3,11 @@
 import HeaderSub from '@/components/layout/HeaderSub';
 import ChatTransactionButton from '@/components/ui/ChatTransactionButton';
 import Image from 'next/image';
-import { ChatPictureIcon } from '../../components/icons/ChatPicture';
-import { SendIcon } from '../../components/icons/Send';
 import { useEffect, useState } from 'react';
 import Chatting from '@/components/ui/Chatting';
 import { useUserStore } from '@/zustand/useUserStore';
 import useChat from '../_hooks/useChat';
+import ChatInputForm from '../_components/ChatInputForm';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -39,17 +38,6 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
   );
 
   const [product, setProduct] = useState<ProductData | null>(null);
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (message.trim()) {
-      // 여기서 메시지 전송 로직 처리
-      await sendMessage(message.trim());
-
-      setMessage(''); // 전송 후 입력창 초기화
-    }
-  };
 
   // 초기 데이터 로드 및 가상 파트너 정보 가져오기
   useEffect(() => {
@@ -141,12 +129,13 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
             </div>
           </article>
 
+          {/* 완료 / 후기 버튼 */}
           <ChatTransactionButton />
         </div>
       </div>
 
       {/* 채팅 내용 */}
-      <div className="pt-27.75 md:pt-33.5 lg:pt-35.75 pb-12">
+      <div className="pt-27.75 md:pt-33.5 lg:pt-35.75 pb-14">
         {messages.map((msg, index) => (
           <Chatting
             key={msg._id || index}
@@ -159,33 +148,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
       </div>
 
       {/* 채팅 입력 폼 */}
-      <form
-        onSubmit={handleSubmit}
-        className="fixed bottom-0 right-0 left-0 flex gap-2 items-center bg-white px-2 py-1"
-      >
-        <button
-          type="button"
-          aria-label="이미지 첨부"
-          className="text-brown-accent cursor-pointer shrink-0"
-        >
-          <ChatPictureIcon />
-        </button>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="메시지를 입력"
-          className="flex-1 min-w-0 text-font-dark font-bold rounded-[20px] bg-gray-light outline-none focus:outline-none px-3 py-2"
-        />
-        <button
-          type="submit"
-          disabled={!message.trim()}
-          aria-label="메시지 전송"
-          className={`cursor-pointer shrink-0 ${message.trim() ? 'text-green-primary' : 'text-gray-lighter'}`}
-        >
-          <SendIcon />
-        </button>
-      </form>
+      <ChatInputForm onSendMessage={sendMessage} />
     </>
   );
 }
