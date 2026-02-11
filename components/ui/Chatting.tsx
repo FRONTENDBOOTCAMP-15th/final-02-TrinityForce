@@ -1,5 +1,6 @@
 import { ChatMessage } from '@/app/chat/_types/chat';
 import { User } from '@/types/user';
+import DOMPurify from 'dompurify';
 import Image from 'next/image';
 
 interface MessageBubbleProps {
@@ -38,6 +39,22 @@ export default function Chatting({
     return `${period} ${displayHours}:${minutes.toString().padStart(2, '0')}`;
   };
 
+  // HTML을 안전하게 렌더링하는 함수
+  const sanitizeAndRenderHTML = (content: string) => {
+    // DOMPurify로 XSS 공격 방지
+    const cleanHTML = DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: ['img', 'br'], // img와 br만 허용
+      ALLOWED_ATTR: ['src', 'alt', 'style'], // src, alt, style 속성만 허용
+    });
+
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: cleanHTML }}
+        className="message-content"
+      />
+    );
+  };
+
   return (
     <>
       <article className={`flex ${wrapperCls}`}>
@@ -52,7 +69,7 @@ export default function Chatting({
         )}
 
         <div className="flex gap-2 items-end">
-          {/* 메타 정보: 내 메시지면 앞에, 상대 메시지면 뒤에 렌더링 용도 */}
+          {/* 내 메시지면 앞에, 상대 메시지면 뒤에 렌더링 용도 */}
           {isMine ? (
             <div className="flex flex-col pt-1.5 items-end">
               <div className="text-[8px] font-bold text-green-primary">
@@ -67,7 +84,7 @@ export default function Chatting({
           <div className="flex gap-1 items-center pt-3.5">
             <div className={bubbleCls}>
               <div className="text-sm font-bold mx-2 my-1">
-                {message.content}
+                {sanitizeAndRenderHTML(message.content)}
               </div>
             </div>
           </div>
