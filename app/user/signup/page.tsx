@@ -194,7 +194,11 @@ const [isNameChecked, setIsNameChecked] = useState(false);
       console.log('로그인 응답:', loginResponse.data)
 
       if (loginResponse.data.ok) {
-        const userData = loginResponse.data.item
+        // 로그인 응답에 address가 없을 수 있으므로 회원가입 시 입력한 주소를 병합
+        const userData = {
+          ...loginResponse.data.item,
+          address: loginResponse.data.item.address || address.trim()
+        }
         setUser(userData, true) //  바로 로그인
 
         alert('회원가입 성공!')

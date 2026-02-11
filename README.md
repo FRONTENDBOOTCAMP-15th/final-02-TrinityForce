@@ -17,33 +17,96 @@
 
 읽은 책은 나누고, 읽고 싶은 책은 만나보세요.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<br>
+<br>
+<br>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚙️ 기술 스택 및 개발 환경
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<hr>
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| 분류             | 툴                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **기술 스택**    | <img src="https://img.shields.io/badge/Tailwind-6d28d9?style=flat-square&logo=Tailwind&logoColor=white"/> <img src="https://img.shields.io/badge/Typescript-3178C6?style=flat-square&logo=Typescript&logoColor=white"/>                                                                                                                                                                                             |
+| **UI/UX**        | <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat-square&logo=Figma&logoColor=white"/>                                                                                                                                                                                                                                                                                                                 |
+| **개발 환경**    | <img src="https://img.shields.io/badge/VisualStudioCode-007ACC?style=flat-square&logo=VisualStudioCode&logoColor=white"/> <img src="https://img.shields.io/badge/vite-646CFF?style=flat-square&logo=vite&logoColor=white"/>                                                                                                                                                                                         |
+| **커뮤니케이션** | <img src="https://img.shields.io/badge/Github-181717?style=flat-square&logo=Github&logoColor=white"/> <img src="https://img.shields.io/badge/GIT-F05032?style=flat-square&logo=GIT&logoColor=white"/> <img src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=Discord&logoColor=white"/> <img src="https://img.shields.io/badge/notion-000000?style=flat-square&logo=notion&logoColor=white"/> |
+| **배포**         | <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white"/> |
 
-## Learn More
+<br>
+<br>
+<br>
 
-To learn more about Next.js, take a look at the following resources:
+## 👥 역할 분담
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| ![로사](https://github.com/user-attachments/assets/9bda0697-6161-4afb-865b-e6ba2d1e2969)| ![나옹이](https://github.com/user-attachments/assets/63b903b4-307f-48e0-928b-7cb8ae425c35)|![로이](https://github.com/user-attachments/assets/c0a7e8e2-700c-485f-a431-2a26fa779315)|
+|------|------|------|
+| 김하연 | 조시연 | 이하영 |
+| PM, 발표 | 서기 | PL |
+| 도서 등록, 도서 목록 및 상세, 모임 목록 및 상세, 위치 권한 및 설정 | 로그인 및 회원가입, 검색바, 내정보, 후기 | 채팅, 알림 |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<br>
+<br>
+<br>
 
-## Deploy on Vercel
+## 🖥️ 기술 구현 상세 및 기능 시연
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<hr>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 메인 홈
+
+- **헤더:** 로고 메인페이지 이동 / 위치 재설정 기능 / 알림 목록
+- **검색창:** 도서 검색 기능<br>
+- **도서 목록:** 도서 상세페이지로 이동<br>
+- **푸터:** 각각 홈, 모임게시판, 도서 등록, 채팅 목록, 내 정보로 이동하는 버튼
+  <br>
+  <br>
+
+### 위치 재설정
+
+### 로그인&회원가입
+
+- **로그인:** 로그인 시 이메일 확인 → 회원일 시 비밀번호 입력 후 로그인 / 비회원일 시 비회원 문구 출력 후 회원가입(권한동의)<br>
+- **회원가입:** 권한동의, 회원가입(필수 입력사항 미입력시 안넘어감)기능, 메인화면으로 이동<br>
+- **권한 동의:** 모두 동의 박스 체크시 모든 input박스 체크 / 모든 박스 체크시 ‘계속’버튼 활성화 / 버튼 hover기능
+  <br>
+  <br>
+
+### 상품 리스트
+
+- **메인 카테고리별 상품 목록 조회:** 상단 햄버거 버튼을 누른 후 카테고리 버튼을 눌렀을 때도 누른 카테고리에 맞는 상품이 렌더링 됨.<br>
+- **결과 텍스트 상품 개수와 연동:** 몇 개의 결과가 나오는지 알려주는 텍스트를 실제 리스트에 보이는 상품 개수와 동일하도록 만듦.<br>
+- **페이지 처리 방식:** 스크롤 시 스크롤이 바닥에 닿았을 때 4개씩 추가로 상품이 더 보이도록 무한 스크롤 기능 추가
+  <br>
+  <br>
+
+### 제품 상세
+
+- **사이즈 선택 + 재고여부 확인:** 사이즈 선택 기능 연결 완료<br>
+- **장바구니에 담기:** 로그인 시: 사이즈 선택 후 장바구니 추가 기능 연결 완료 / 비로그인 시: 로그인이 필요하다는 문구 출력<br>
+- **위시리스트 추가:** 위시리스트 추가 기능 연결 완료<br>
+- **추천 제품 목록:** 현재 보고 있는 제품의 카테고리와 일치하는 제품을 추천하는 기능 연결 완료
+  <br>
+  <br>
+
+### 장바구니
+
+- **장바구니 상품 목록 조회:** 장바구니에 담겨져 있는 상품의 목록들을 조회<br>
+- **수량 수정:** 플러스, 마이너스를 버튼을 클릭 시 상품의 수량과 총 금액을 변경<br>
+- **찜하기:** 빈 하트 아이콘 클릭 시 채워진 하트로 변경<br>
+- **삭제:** 휴지통 아이콘 클릭 시 장바구니에서 해당 상품을 삭제
+  <br>
+  <br>
+
+<br>
+
+## 💡 회고 및 추후 보완하고 싶은 점
+
+<hr>
+
+| **팀원**      | **회고**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | **추후 개선하고 싶은 점**                                                                                                                                                                                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **김하연** |   |  |
+| **조시연** |  | |
+| **이하영** |  | |
+

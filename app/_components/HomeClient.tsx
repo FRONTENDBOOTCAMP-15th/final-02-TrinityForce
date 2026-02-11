@@ -6,7 +6,9 @@ import { Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import SearchInput from '@/components/common/SearchInput';
-import { useLocationStore } from '@/zustand/useLocationStore';
+import { useUserStore } from '@/zustand/useUserStore';
+import { useLikeStore } from '@/zustand/useLikeStore';
+import LoginModal from '@/components/modals/LoginModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -35,10 +37,32 @@ interface Product {
 
 export default function HomeClient() {
   const router = useRouter();
-  const { address: userLocation } = useLocationStore();
+  const user = useUserStore((state) => state.user);
+  const userAddress = user?.address;
+  const { isLiked, toggleLike } = useLikeStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // 좋아요 클릭 핸들러
+  const handleLikeClick = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 로그인 체크
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    toggleLike({
+      _id: product._id,
+      name: product.name,
+      image: product.mainImages?.[0]?.path || '',
+      author: product.extra?.author,
+    });
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -52,9 +76,16 @@ export default function HomeClient() {
         // isBook이 true인 상품만 필터링
         let books = (data.item || []).filter((item: Product) => item.extra?.isBook);
 
-        // 사용자가 위치를 설정한 경우, 같은 동네의 도서만 표시
-        if (userLocation) {
-          books = books.filter((item: Product) => item.extra?.location === userLocation);
+        // 로그인한 사용자의 주소와 같은 지역의 도서만 표시
+        if (userAddress) {
+          books = books.filter((item: Product) => {
+            const bookLocation = item.extra?.location;
+            if (!bookLocation) return false;
+            // 주소에서 구 정보 추출하여 비교
+            const userGu = userAddress.match(/\S+구/)?.[0];
+            const bookGu = bookLocation.match(/\S+구/)?.[0];
+            return userGu && bookGu && userGu === bookGu;
+          });
         }
 
         setProducts(books);
@@ -66,7 +97,7 @@ export default function HomeClient() {
     };
 
     fetchProducts();
-  }, [userLocation]);
+  }, [userAddress]);
 
   // 날짜 포맷팅
   const formatDate = (dateString: string) => {
@@ -140,14 +171,24 @@ export default function HomeClient() {
                     fill
                     className="object-cover"
                   />
-                  <button
-                    type="button"
-                    className="absolute top-3 right-3 w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform"
-                    aria-label="좋아요"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <Heart size={18} className="md:w-5 md:h-5 text-font-dark" />
-                  </button>
+                  {/* 본인 글이 아닐 때만 좋아요 버튼 표시 */}
+                  {user?._id !== product.seller_id && (
+                    <button
+                      type="button"
+                      className="absolute top-3 right-3 w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+                      aria-label="좋아요"
+                      onClick={(e) => handleLikeClick(e, product)}
+                    >
+                      <Heart
+                        size={18}
+                        className={`md:w-5 md:h-5 transition-colors ${
+                          isLiked(product._id)
+                            ? 'text-red-like fill-red-like'
+                            : 'text-font-dark hover:text-red-like hover:fill-red-like'
+                        }`}
+                      />
+                    </button>
+                  )}
                 </div>
 
                 {/* 정보 */}
@@ -167,6 +208,12 @@ export default function HomeClient() {
           </div>
         )}
       </main>
+
+      {/* 로그인 모달 */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </div>
   );
 }
