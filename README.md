@@ -19,7 +19,7 @@
 
 ## 👥 역할 분담
 
-| ![로사](https://github.com/user-attachments/assets/9bda0697-6161-4afb-865b-e6ba2d1e2969)| ![나옹이](https://github.com/user-attachments/assets/257d2d79-e5c6-43b1-a164-122a26ad3011)|![로이](https://github.com/user-attachments/assets/c0a7e8e2-700c-485f-a431-2a26fa779315)|
+| ![로사](https://github.com/user-attachments/assets/9bda0697-6161-4afb-865b-e6ba2d1e2969)| ![나옹이](https://github.com/user-attachments/assets/63b903b4-307f-48e0-928b-7cb8ae425c35)|![로이](https://github.com/user-attachments/assets/c0a7e8e2-700c-485f-a431-2a26fa779315)|
 |------|------|------|
 | 김하연 | 조시연 | 이하영 |
 | PM, 발표 | 서기 | PL |
