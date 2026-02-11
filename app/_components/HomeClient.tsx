@@ -6,7 +6,7 @@ import { Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import SearchInput from '@/components/common/SearchInput';
-import { useLocationStore } from '@/zustand/useLocationStore';
+import { useUserStore } from '@/zustand/useUserStore';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -35,7 +35,8 @@ interface Product {
 
 export default function HomeClient() {
   const router = useRouter();
-  const { address: userLocation } = useLocationStore();
+  const user = useUserStore((state) => state.user);
+  const userAddress = user?.address;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,9 +53,16 @@ export default function HomeClient() {
         // isBook이 true인 상품만 필터링
         let books = (data.item || []).filter((item: Product) => item.extra?.isBook);
 
-        // 사용자가 위치를 설정한 경우, 같은 동네의 도서만 표시
-        if (userLocation) {
-          books = books.filter((item: Product) => item.extra?.location === userLocation);
+        // 로그인한 사용자의 주소와 같은 지역의 도서만 표시
+        if (userAddress) {
+          books = books.filter((item: Product) => {
+            const bookLocation = item.extra?.location;
+            if (!bookLocation) return false;
+            // 주소에서 구 정보 추출하여 비교
+            const userGu = userAddress.match(/\S+구/)?.[0];
+            const bookGu = bookLocation.match(/\S+구/)?.[0];
+            return userGu && bookGu && userGu === bookGu;
+          });
         }
 
         setProducts(books);
@@ -66,7 +74,7 @@ export default function HomeClient() {
     };
 
     fetchProducts();
-  }, [userLocation]);
+  }, [userAddress]);
 
   // 날짜 포맷팅
   const formatDate = (dateString: string) => {
