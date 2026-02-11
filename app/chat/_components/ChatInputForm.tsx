@@ -210,9 +210,9 @@ export default function ChatInputForm({ onSendMessage }: ChatInputFormProps) {
             type="submit"
             disabled={(!message.trim() && !selectedImage) || isUploading}
             aria-label="메시지 전송"
-            className={`cursor-pointer shrink-0 transition-opacity ${
+            className={`shrink-0 transition-opacity ${
               (message.trim() || selectedImage) && !isUploading
-                ? 'text-green-primary hover:opacity-70'
+                ? 'text-green-primary hover:opacity-70 cursor-pointer'
                 : 'text-gray-lighter cursor-not-allowed'
             }`}
           >
