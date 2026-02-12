@@ -221,7 +221,7 @@
   <br>
 
 ### 도서 등록 페이지
-![Image](https://github.com/user-attachments/assets/75955850-40a3-48de-a396-5a05255a1939)
+![Image](https://github.com/user-attachments/assets/ebddb68f-e076-4e06-b323-d8f604da4715)
 
 - **헤더:** 뒤로가기 버튼 / 페이지 제목
 - **도서 이미지:** 최대 12장 다중 이미지 업로드 / 미리보기 / 삭제 기능
