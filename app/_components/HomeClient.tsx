@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import SearchInput from '@/components/common/SearchInput';
 import { useUserStore } from '@/zustand/useUserStore';
 import { useLikeStore } from '@/zustand/useLikeStore';
+import { useLocationStore } from '@/zustand/useLocationStore';
 import LoginModal from '@/components/modals/LoginModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -38,7 +39,8 @@ interface Product {
 export default function HomeClient() {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
-  const userAddress = user?.address;
+  const locationAddress = useLocationStore((state) => state.address);
+  const userAddress = locationAddress || user?.address;
   const { isLiked, toggleLike } = useLikeStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -148,12 +150,19 @@ export default function HomeClient() {
             <p className="text-font-dark text-lg">
               {products.length === 0 ? '등록된 도서가 없습니다.' : '검색 결과가 없습니다.'}
             </p>
-            <Link
-              href="/book-registration"
+            <button
+              type="button"
+              onClick={() => {
+                if (!user) {
+                  setIsLoginModalOpen(true);
+                } else {
+                  router.push('/book-registration');
+                }
+              }}
               className="mt-4 px-4 py-2 bg-brown-accent text-font-white rounded-lg"
             >
               도서 등록하기
-            </Link>
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
