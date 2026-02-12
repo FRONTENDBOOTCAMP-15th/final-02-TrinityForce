@@ -137,7 +137,7 @@
   <br>
 
 ### 위치 재설정
-![Image](https://github.com/user-attachments/assets/3fe467dc-6111-4db2-965b-cce043958874)
+![Image](https://github.com/user-attachments/assets/42783bbd-78ad-475d-9dbf-304c7907cbb3)
 
 - **헤더:** 닫기 버튼 / 페이지 제목
 - **지도:** 카카오맵 API를 활용한 현재 위치 표시
