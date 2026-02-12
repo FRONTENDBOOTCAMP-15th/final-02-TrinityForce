@@ -27,7 +27,7 @@ export default function ChatItem({
     (m) => String(m._id) !== String(currentUser?._id)
   );
   const displayName = partner?.name || '알 수 없는 사용자';
-  const displayImage = partner?.image || '/images/favicon.svg';
+  const displayImage = partner?.image;
 
   // 마지막 메시지 정보
   const lastMessage = room.lastMessage;
@@ -75,7 +75,7 @@ export default function ChatItem({
             height={42}
           />
         ) : (
-          <span className="text-2xl font-bold text-white">
+          <span className="flex justify-center items-center w-10.5 h-10.5 rounded-lg text-2xl font-bold text-white bg-brown-guide">
             {displayName?.[0] || '?'}
           </span>
         )}
@@ -89,7 +89,7 @@ export default function ChatItem({
         </div>
         {room.unreadCount ? (
           <div className="ml-3 shrink-0">
-            <span className="inline-flex items-center justify-center bg-red-like text-white rounded-full w-6 h-6 text-xs font-semibold">
+            <span className="inline-flex items-center justify-center bg-red-like/90 text-white rounded-full w-6 h-6 text-xs font-semibold">
               {room.unreadCount}
             </span>
           </div>
