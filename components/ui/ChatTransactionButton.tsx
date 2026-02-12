@@ -16,6 +16,11 @@ export default function ChatTransactionButton({ orderId, productId, isOwner }: P
   const [isCompleted, setIsCompleted] = useState(false);
   const router = useRouter();
 
+  // 후기 작성했으면 버튼 숨기기
+  const isReviewed = typeof window !== 'undefined'
+    ? localStorage.getItem(`review_${orderId}`)
+    : null
+
   const handleComplete = async () => {
   try {
     const axios = getAxios()
@@ -44,8 +49,12 @@ export default function ChatTransactionButton({ orderId, productId, isOwner }: P
 
   // 글 올린 사람 > x
   // 신청한 사람 > 교환 완료 후 후기 작성 버튼
-
   if (isOwner) return null
+
+  // 이미 후기 작성했으면 아무것도 안 보여줌
+  if (isReviewed) return null
+  
+
 
   return (
     <>
