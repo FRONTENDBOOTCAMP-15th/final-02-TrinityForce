@@ -8,6 +8,7 @@ import { getAxios, handleAxiosError } from '@/utils/axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import HeaderSub from '@/components/layout/HeaderSub';
 import { useUserStore } from '@/zustand/useUserStore';
+import { useLocationStore } from '@/zustand/useLocationStore';
 
 type SearchResult = {
   _id: number;
@@ -18,6 +19,7 @@ type SearchResult = {
     author?: string;
     category?: string;
     condition?: string;
+    location?: string | null;
   };
   createdAt: string;
   seller: {
@@ -43,9 +45,10 @@ export default function SearchPage() {
     return [];
   });
 
-  // 유저 주소 가져오기
+  // 유저 주소 가져오기 (위치 재설정 주소 우선, 없으면 회원가입 주소)
   const user = useUserStore((state) => state.user);
-  const userAddress = user?.address;
+  const locationAddress = useLocationStore((state) => state.address);
+  const userAddress = locationAddress || user?.address;
 
   // 검색 실행
   const handleSearch = useCallback(async (keyword: string, category: string) => {
@@ -75,12 +78,16 @@ export default function SearchPage() {
 
       let results = response.data.item || [];
 
-      // 위치 필터링
+      // 위치 필터링 (도서의 extra.location 기준)
         if (userAddress) {
-          const userRegion = userAddress.split(' ')[1]  // "서초구", "송파구" 등 구 단위 추출
           results = results.filter((item: SearchResult) => {
-            return item.seller?.address?.includes(userRegion)
-          })
+            const bookLocation = item.extra?.location;
+            if (!bookLocation) return false;
+            // 주소에서 구 정보 추출하여 비교
+            const userGu = userAddress.match(/\S+구/)?.[0];
+            const bookGu = bookLocation.match(/\S+구/)?.[0];
+            return userGu && bookGu && userGu === bookGu;
+          });
         }
 
       setSearchResults(results);
