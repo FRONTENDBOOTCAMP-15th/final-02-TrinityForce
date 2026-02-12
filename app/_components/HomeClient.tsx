@@ -47,6 +47,14 @@ export default function HomeClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('hasVisited')
+    if (!hasVisited) {
+      localStorage.setItem('hasVisited', 'true')
+      router.push('/splash')
+    }
+  }, [router])
+
   // 좋아요 클릭 핸들러
   const handleLikeClick = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
