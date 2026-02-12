@@ -10,6 +10,7 @@ import { getUser, setUser as setLocalUser } from "@/utils/user"
 import { getAxios, handleAxiosError } from "@/utils/axios"
 import type { UserDetail } from "@/types/user"
 import Script from "next/script"
+import { useUserStore } from "@/zustand/useUserStore"
 
 
 declare global {
@@ -26,6 +27,7 @@ declare global {
 export default function ProfileEditPage() {
   const router = useRouter()
   const currentUser = getUser()
+  const setUser = useUserStore((state) => state.setUser)
   
 
   const [nickname, setNickname] = useState(currentUser?.name || '')
@@ -122,6 +124,7 @@ export default function ProfileEditPage() {
       
       const updatedUser = { ...currentUser, ...updateData } as UserDetail
       setLocalUser(updatedUser)
+      setUser(updatedUser, true)
       
       alert('프로필이 변경되었습니다!')
       router.push('/user/mypage')
