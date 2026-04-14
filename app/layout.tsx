@@ -34,7 +34,7 @@ export default function RootLayout({
           rel="preload"
           as="font"
           type="font/woff2"
-          href="/fonts/Pretendard-Regular.woff2"
+          href="/Pretendard-Regular.woff2"
           crossOrigin="anonymous"
         />
         <Script
