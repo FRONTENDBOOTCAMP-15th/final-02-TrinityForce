@@ -98,6 +98,8 @@ export default function DetailPage() {
                 src={src}
                 alt={`도서 사진 ${idx + 1}`}
                 fill
+                priority={idx === 0}
+                loading={idx === 0 ? 'eager' : 'lazy'}
                 sizes="256px"
                 className="object-cover"
               />

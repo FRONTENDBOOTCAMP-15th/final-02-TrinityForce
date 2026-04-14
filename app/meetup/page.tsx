@@ -202,7 +202,7 @@ export default function Meetup() {
         /* 모임 목록 */
         <main className="px-4 pb-24 md:px-6 max-w-6xl mx-auto">
           <div className="flex flex-col gap-4 md:gap-6">
-            {filteredPosts.map((post) => {
+            {filteredPosts.map((post, index) => {
               const imageUrl = getImageUrl(post);
               return (
                 <Link
@@ -218,6 +218,8 @@ export default function Meetup() {
                         src={imageUrl}
                         alt={post.title}
                         fill
+                        priority={index < 4}
+                        loading={index < 4 ? 'eager' : 'lazy'}
                         sizes="(max-width: 768px) 96px, (max-width: 1024px) 128px, 160px"
                         className="object-cover"
                       />

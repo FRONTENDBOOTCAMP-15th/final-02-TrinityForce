@@ -325,6 +325,8 @@ export default function MeetupPostDetail() {
               src={imageUrl}
               alt={displayPost.title}
               fill
+              priority
+              loading="eager"
               sizes="(max-width: 1024px) 100vw, 1024px"
               className="object-cover"
             />

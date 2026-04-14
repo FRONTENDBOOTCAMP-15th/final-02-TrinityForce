@@ -186,7 +186,7 @@ export default function HomeClient({
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {filteredProducts.map((product) => (
+            {filteredProducts.map((product, index) => (
               <Link
                 key={product._id}
                 href={`/book-detail/${product._id}`}
@@ -198,6 +198,8 @@ export default function HomeClient({
                     src={getImageUrl(product.mainImages?.[0]?.path)}
                     alt={product.name}
                     fill
+                    priority={index < 4}
+                    loading={index < 4 ? 'eager' : 'lazy'}
                     sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     className="object-cover"
                   />

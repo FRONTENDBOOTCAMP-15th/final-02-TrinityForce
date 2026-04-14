@@ -251,6 +251,8 @@ export default function BookDetailClient({
                     src={getImageUrl(img.path)}
                     alt={`${product.name} ${idx + 1}`}
                     fill
+                    priority={idx === 0}
+                    loading={idx === 0 ? 'eager' : 'lazy'}
                     sizes="128px"
                     className="object-cover"
                   />
